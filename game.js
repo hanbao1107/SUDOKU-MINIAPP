@@ -534,11 +534,24 @@ function checkBoard() {
     }
   }
   
-  wx.showToast({
-    title: errors === 0 ? '没有错误！' : `发现 ${errors} 个错误`,
-    icon: errors === 0 ? 'success' : 'none'
-  })
   render()
+  
+  if (errors === 0) {
+    wx.showToast({
+      title: '没有错误！',
+      icon: 'success'
+    })
+  } else {
+    wx.showModal({
+      title: `发现 ${errors} 个错误`,
+      content: '是否清除所有错误格子？',
+      success: (res) => {
+        if (res.confirm) {
+          clearErrors()
+        }
+      }
+    })
+  }
 }
 
 function giveHint() {
