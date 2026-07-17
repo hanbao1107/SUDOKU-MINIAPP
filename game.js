@@ -10,6 +10,7 @@ let board = []
 let solution = []
 let fixed = []
 let hint = []
+let error = []
 let selectedCell = null
 let difficulty = 'easy'
 let timer = 0
@@ -95,11 +96,12 @@ function generatePuzzle() {
   board = solution.map(row => [...row])
   fixed = solution.map(row => row.map(() => true))
   hint = solution.map(row => row.map(() => false))
+  error = solution.map(row => row.map(() => false))
   
   const cellsToRemove = {
     easy: 35,
-    medium: 45,
-    hard: 55
+    medium: 40,
+    hard: 45
   }
   
   const target = cellsToRemove[difficulty]
@@ -272,6 +274,7 @@ function handleInput(e) {
         const { row: selRow, col: selCol } = selectedCell
         if (!fixed[selRow][selCol]) {
           board[selRow][selCol] = i
+          error[selRow][selCol] = false
           remaining = board.flat().filter(cell => cell === 0).length
           render()
         }
@@ -291,13 +294,14 @@ function handleInput(e) {
       render()
     }, 150)
     if (selectedCell) {
-      const { row: selRow, col: selCol } = selectedCell
-      if (!fixed[selRow][selCol]) {
-        board[selRow][selCol] = 0
-        remaining = board.flat().filter(cell => cell === 0).length
-        render()
+        const { row: selRow, col: selCol } = selectedCell
+        if (!fixed[selRow][selCol]) {
+          board[selRow][selCol] = 0
+          error[selRow][selCol] = false
+          remaining = board.flat().filter(cell => cell === 0).length
+          render()
+        }
       }
-    }
     return
   }
 }
@@ -389,6 +393,11 @@ function renderBoard() {
       
       if (hint[i][j]) {
         ctx.fillStyle = colors.hint
+        ctx.fillRect(x, y, cellSize, cellSize)
+      }
+      
+      if (error[i][j]) {
+        ctx.fillStyle = colors.error
         ctx.fillRect(x, y, cellSize, cellSize)
       }
       
@@ -518,6 +527,9 @@ function checkBoard() {
     for (let j = 0; j < 9; j++) {
       if (board[i][j] !== 0 && board[i][j] !== solution[i][j]) {
         errors++
+        error[i][j] = true
+      } else {
+        error[i][j] = false
       }
     }
   }
@@ -526,6 +538,7 @@ function checkBoard() {
     title: errors === 0 ? '没有错误！' : `发现 ${errors} 个错误`,
     icon: errors === 0 ? 'success' : 'none'
   })
+  render()
 }
 
 function giveHint() {
