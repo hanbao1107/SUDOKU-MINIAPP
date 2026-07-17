@@ -368,29 +368,37 @@ function renderBoard() {
   ctx.fill()
   
   ctx.strokeStyle = colors.border
-  ctx.lineWidth = 4
-  ctx.stroke()
-  
-  ctx.strokeStyle = colors.border
   ctx.lineWidth = 2
-  for (let i = 1; i < 3; i++) {
-    ctx.beginPath()
-    ctx.moveTo(offsetX, offsetY + cellSize * 3 * i)
-    ctx.lineTo(offsetX + cellSize * 9, offsetY + cellSize * 3 * i)
-    ctx.stroke()
-    
-    ctx.beginPath()
-    ctx.moveTo(offsetX + cellSize * 3 * i, offsetY)
-    ctx.lineTo(offsetX + cellSize * 3 * i, offsetY + cellSize * 9)
-    ctx.stroke()
-  }
+  ctx.stroke()
   
   ctx.strokeStyle = colors.cellBorder
   ctx.lineWidth = 1
-  for (let i = 0; i < 9; i++) {
-    for (let j = 0; j < 9; j++) {
-      ctx.strokeRect(offsetX + j * cellSize, offsetY + i * cellSize, cellSize, cellSize)
-    }
+  for (let i = 1; i < 9; i++) {
+    ctx.beginPath()
+    ctx.moveTo(offsetX + 0.5, offsetY + i * cellSize)
+    ctx.lineTo(offsetX + cellSize * 9 - 0.5, offsetY + i * cellSize)
+    ctx.stroke()
+  }
+  
+  for (let j = 1; j < 9; j++) {
+    ctx.beginPath()
+    ctx.moveTo(offsetX + j * cellSize, offsetY + 0.5)
+    ctx.lineTo(offsetX + j * cellSize, offsetY + cellSize * 9 - 0.5)
+    ctx.stroke()
+  }
+  
+  ctx.strokeStyle = '#64748b'
+  ctx.lineWidth = 2
+  for (let i = 1; i < 3; i++) {
+    ctx.beginPath()
+    ctx.moveTo(offsetX + 0.5, offsetY + cellSize * 3 * i)
+    ctx.lineTo(offsetX + cellSize * 9 - 0.5, offsetY + cellSize * 3 * i)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.moveTo(offsetX + cellSize * 3 * i, offsetY + 0.5)
+    ctx.lineTo(offsetX + cellSize * 3 * i, offsetY + cellSize * 9 - 0.5)
+    ctx.stroke()
   }
   
   for (let i = 0; i < 9; i++) {
