@@ -97,6 +97,7 @@ function generatePuzzle() {
   fixed = solution.map(row => row.map(() => true))
   hint = solution.map(row => row.map(() => false))
   error = solution.map(row => row.map(() => false))
+  selectedCell = null
   
   const cellsToRemove = {
     easy: 35,
@@ -260,7 +261,7 @@ function handleInput(e) {
   
   const ctrlBtnY = offsetY + cellSize * 9 + 15
   const ctrlBtnWidth = (width - 60) / 4
-  const ctrlBtnHeight = 38
+  const ctrlBtnHeight = 45
   
   const ctrlBtns = [newGame, checkBoard, giveHint, submitBoard]
   
@@ -279,14 +280,16 @@ function handleInput(e) {
   }
   
   const numPadY = ctrlBtnY + ctrlBtnHeight + 15
-  const numBtnWidth = (width - 50) / 4
-  const numBtnHeight = (width - 50) / 4
+  const numBtnWidth = (width - 60) / 5
+  const numBtnHeight = (width - 75) / 5
   const numPadHeight = numBtnHeight * 3 + 6 * 2
+  const numPadWidth = 4 * numBtnWidth + 3 * 6
+  const numPadOffsetX = (width - numPadWidth) / 2
   
   for (let i = 1; i <= 9; i++) {
     const row = Math.floor((i - 1) / 3)
     const col = (i - 1) % 3
-    const numX = 15 + col * (numBtnWidth + 6)
+    const numX = numPadOffsetX + col * (numBtnWidth + 6)
     const numY = numPadY + row * (numBtnHeight + 6)
     
     if (x >= numX && x <= numX + numBtnWidth && y >= numY && y <= numY + numBtnHeight) {
@@ -309,7 +312,7 @@ function handleInput(e) {
     }
   }
   
-  const clearX = 15 + 3 * (numBtnWidth + 6)
+  const clearX = numPadOffsetX + 3 * (numBtnWidth + 6)
   const clearY = numPadY
   
   if (x >= clearX && x <= clearX + numBtnWidth && y >= clearY && y <= clearY + numPadHeight) {
@@ -495,7 +498,7 @@ function renderControls() {
     ctx.fill()
     
     ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 14px Arial'
+    ctx.font = 'bold 15px Arial'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(btn.text, x + btnWidth / 2, y + btnHeight / 2)
@@ -508,17 +511,19 @@ function renderNumberPad() {
   const ctrlBtnHeight = 45
   const numPadY = ctrlBtnY + ctrlBtnHeight + 15
   
-  const numBtnWidth = (width - 40) / 4
-  const numBtnHeight = (width - 55) / 4
-  const numPadHeight = numBtnHeight * 3 + 8 * 2
+  const numBtnWidth = (width - 60) / 5
+  const numBtnHeight = (width - 75) / 5
+  const numPadHeight = numBtnHeight * 3 + 6 * 2
+  const numPadWidth = 4 * numBtnWidth + 3 * 6
+  const numPadOffsetX = (width - numPadWidth) / 2
   
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   
   numbers.forEach((num, index) => {
     const row = Math.floor(index / 3)
     const col = index % 3
-    const x = 15 + col * (numBtnWidth + 8)
-    const y = numPadY + row * (numBtnHeight + 8)
+    const x = numPadOffsetX + col * (numBtnWidth + 6)
+    const y = numPadY + row * (numBtnHeight + 6)
     const isPressed = pressedBtn && pressedBtn.type === 'num' && pressedBtn.value === num
     
     ctx.fillStyle = isPressed ? colors.btnPressed : colors.btnPrimary
@@ -532,7 +537,7 @@ function renderNumberPad() {
     ctx.fillText(num, x + numBtnWidth / 2, y + numBtnHeight / 2)
   })
   
-  const clearX = 15 + 3 * (numBtnWidth + 8)
+  const clearX = numPadOffsetX + 3 * (numBtnWidth + 6)
   const clearY = numPadY
   const isClearPressed = pressedBtn && pressedBtn.type === 'clear'
   
