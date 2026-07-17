@@ -367,40 +367,6 @@ function renderBoard() {
   drawRoundRect(offsetX, offsetY, cellSize * 9, cellSize * 9, 12)
   ctx.fill()
   
-  ctx.strokeStyle = colors.border
-  ctx.lineWidth = 2
-  ctx.stroke()
-  
-  ctx.strokeStyle = colors.cellBorder
-  ctx.lineWidth = 1
-  for (let i = 1; i < 9; i++) {
-    ctx.beginPath()
-    ctx.moveTo(offsetX + 0.5, offsetY + i * cellSize)
-    ctx.lineTo(offsetX + cellSize * 9 - 0.5, offsetY + i * cellSize)
-    ctx.stroke()
-  }
-  
-  for (let j = 1; j < 9; j++) {
-    ctx.beginPath()
-    ctx.moveTo(offsetX + j * cellSize, offsetY + 0.5)
-    ctx.lineTo(offsetX + j * cellSize, offsetY + cellSize * 9 - 0.5)
-    ctx.stroke()
-  }
-  
-  ctx.strokeStyle = '#64748b'
-  ctx.lineWidth = 2
-  for (let i = 1; i < 3; i++) {
-    ctx.beginPath()
-    ctx.moveTo(offsetX + 0.5, offsetY + cellSize * 3 * i)
-    ctx.lineTo(offsetX + cellSize * 9 - 0.5, offsetY + cellSize * 3 * i)
-    ctx.stroke()
-    
-    ctx.beginPath()
-    ctx.moveTo(offsetX + cellSize * 3 * i, offsetY + 0.5)
-    ctx.lineTo(offsetX + cellSize * 3 * i, offsetY + cellSize * 9 - 0.5)
-    ctx.stroke()
-  }
-  
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       const x = offsetX + j * cellSize
@@ -434,6 +400,40 @@ function renderBoard() {
         ctx.fillText(board[i][j], x + cellSize / 2, y + cellSize / 2)
       }
     }
+  }
+  
+  ctx.strokeStyle = colors.border
+  ctx.lineWidth = 2
+  ctx.stroke()
+  
+  ctx.strokeStyle = colors.cellBorder
+  ctx.lineWidth = 1
+  for (let i = 1; i < 9; i++) {
+    ctx.beginPath()
+    ctx.moveTo(offsetX + 0.5, offsetY + i * cellSize)
+    ctx.lineTo(offsetX + cellSize * 9 - 0.5, offsetY + i * cellSize)
+    ctx.stroke()
+  }
+  
+  for (let j = 1; j < 9; j++) {
+    ctx.beginPath()
+    ctx.moveTo(offsetX + j * cellSize, offsetY + 0.5)
+    ctx.lineTo(offsetX + j * cellSize, offsetY + cellSize * 9 - 0.5)
+    ctx.stroke()
+  }
+  
+  ctx.strokeStyle = '#64748b'
+  ctx.lineWidth = 2
+  for (let i = 1; i < 3; i++) {
+    ctx.beginPath()
+    ctx.moveTo(offsetX + 0.5, offsetY + cellSize * 3 * i)
+    ctx.lineTo(offsetX + cellSize * 9 - 0.5, offsetY + cellSize * 3 * i)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.moveTo(offsetX + cellSize * 3 * i, offsetY + 0.5)
+    ctx.lineTo(offsetX + cellSize * 3 * i, offsetY + cellSize * 9 - 0.5)
+    ctx.stroke()
   }
 }
 
