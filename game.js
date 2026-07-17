@@ -54,6 +54,8 @@ function drawRoundRect(x, y, w, h, r) {
   ctx.closePath()
 }
 
+let gameWidth
+
 function init() {
   const systemInfo = wx.getSystemInfoSync()
   width = systemInfo.windowWidth
@@ -62,7 +64,15 @@ function init() {
   statusBarHeight = systemInfo.statusBarHeight || 20
   safeTop = statusBarHeight + 10
   
-  cellSize = Math.floor((width - 40) / 9)
+  const maxWidth = 420
+  const maxCellSize = Math.floor((Math.min(width, maxWidth) - 40) / 9)
+  
+  const availableHeight = height - safeTop - 105 - 15 - 45 - 15 - 6
+  const maxCellSizeByHeight = Math.floor(availableHeight / (9 + 3 + 1))
+  
+  cellSize = Math.min(maxCellSize, maxCellSizeByHeight, 42)
+  
+  gameWidth = cellSize * 9 + 40
   
   canvas.width = width * dpr
   canvas.height = height * dpr
@@ -231,13 +241,14 @@ function handleInput(e) {
   }
   
   const diffBtnY = safeTop + 60
-  const diffBtnWidth = (width - 60) / 3
+  const diffBtnWidth = (gameWidth - 60) / 3
   const diffBtnHeight = 35
+  const offsetX = (width - gameWidth) / 2
   
   const diffBtns = [
-    { action: () => setDifficulty('easy'), x: 15 },
-    { action: () => setDifficulty('medium'), x: 15 + diffBtnWidth + 10 },
-    { action: () => setDifficulty('hard'), x: 15 + (diffBtnWidth + 10) * 2 }
+    { action: () => setDifficulty('easy'), x: offsetX + 15 },
+    { action: () => setDifficulty('medium'), x: offsetX + 15 + diffBtnWidth + 10 },
+    { action: () => setDifficulty('hard'), x: offsetX + 15 + (diffBtnWidth + 10) * 2 }
   ]
   
   for (const btn of diffBtns) {
@@ -247,11 +258,11 @@ function handleInput(e) {
     }
   }
   
-  const offsetX = 20
-  const offsetY = safeTop + 105
+  const boardOffsetX = offsetX + 20
+  const boardOffsetY = safeTop + 105
   
-  const boardCol = Math.floor((x - offsetX) / cellSize)
-  const boardRow = Math.floor((y - offsetY) / cellSize)
+  const boardCol = Math.floor((x - boardOffsetX) / cellSize)
+  const boardRow = Math.floor((y - boardOffsetY) / cellSize)
   
   if (boardRow >= 0 && boardRow < 9 && boardCol >= 0 && boardCol < 9) {
     selectedCell = { row: boardRow, col: boardCol }
@@ -259,14 +270,14 @@ function handleInput(e) {
     return
   }
   
-  const ctrlBtnY = offsetY + cellSize * 9 + 15
-  const ctrlBtnWidth = (width - 60) / 4
+  const ctrlBtnY = boardOffsetY + cellSize * 9 + 15
+  const ctrlBtnWidth = (gameWidth - 60) / 4
   const ctrlBtnHeight = 45
   
   const ctrlBtns = [newGame, checkBoard, giveHint, submitBoard]
   
   for (let i = 0; i < 4; i++) {
-    const btnX = 15 + i * (ctrlBtnWidth + 10)
+    const btnX = offsetX + 15 + i * (ctrlBtnWidth + 10)
     if (x >= btnX && x <= btnX + ctrlBtnWidth && y >= ctrlBtnY && y <= ctrlBtnY + ctrlBtnHeight) {
       pressedBtn = { type: 'ctrl', index: i }
       render()
@@ -279,18 +290,19 @@ function handleInput(e) {
     }
   }
   
-  const numPadY = ctrlBtnY + ctrlBtnHeight + 15
-  const numBtnWidth = (width - 60) / 5
-  const numBtnHeight = (width - 75) / 5
-  const numPadHeight = numBtnHeight * 3 + 6 * 2
-  const numPadWidth = 4 * numBtnWidth + 3 * 6
+  const numBtnSize = Math.max(32, cellSize * 0.85)
+  const numBtnWidth = numBtnSize
+  const numBtnHeight = numBtnSize
+  const numPadHeight = numBtnHeight * 3 + 4 * 2
+  const numPadWidth = 4 * numBtnWidth + 3 * 4
   const numPadOffsetX = (width - numPadWidth) / 2
+  const numPadY = ctrlBtnY + ctrlBtnHeight + 10
   
   for (let i = 1; i <= 9; i++) {
     const row = Math.floor((i - 1) / 3)
     const col = (i - 1) % 3
-    const numX = numPadOffsetX + col * (numBtnWidth + 6)
-    const numY = numPadY + row * (numBtnHeight + 6)
+    const numX = numPadOffsetX + col * (numBtnWidth + 4)
+    const numY = numPadY + row * (numBtnHeight + 4)
     
     if (x >= numX && x <= numX + numBtnWidth && y >= numY && y <= numY + numBtnHeight) {
       pressedBtn = { type: 'num', value: i }
@@ -312,7 +324,7 @@ function handleInput(e) {
     }
   }
   
-  const clearX = numPadOffsetX + 3 * (numBtnWidth + 6)
+  const clearX = numPadOffsetX + 3 * (numBtnWidth + 4)
   const clearY = numPadY
   
   if (x >= clearX && x <= clearX + numBtnWidth && y >= clearY && y <= clearY + numPadHeight) {
@@ -367,8 +379,9 @@ function renderInfo() {
 
 function renderDifficultyButtons() {
   const y = safeTop + 60
-  const btnWidth = (width - 60) / 3
+  const btnWidth = (gameWidth - 60) / 3
   const btnHeight = 35
+  const offsetX = (width - gameWidth) / 2
   
   const difficulties = [
     { text: '简单', value: 'easy' },
@@ -377,7 +390,7 @@ function renderDifficultyButtons() {
   ]
   
   difficulties.forEach((diff, index) => {
-    const x = 15 + index * (btnWidth + 10)
+    const x = offsetX + 15 + index * (btnWidth + 10)
     const isActive = difficulty === diff.value
     
     ctx.fillStyle = isActive ? colors.btnActive : colors.btnSecondary
@@ -393,7 +406,7 @@ function renderDifficultyButtons() {
 }
 
 function renderBoard() {
-  const offsetX = 20
+  const offsetX = (width - gameWidth) / 2 + 20
   const offsetY = safeTop + 105
   
   ctx.fillStyle = colors.board
@@ -478,8 +491,9 @@ function renderBoard() {
 function renderControls() {
   const offsetY = safeTop + 105
   const startY = offsetY + cellSize * 9 + 15
-  const btnWidth = (width - 60) / 4
+  const btnWidth = (gameWidth - 60) / 4
   const btnHeight = 45
+  const offsetX = (width - gameWidth) / 2
   
   const btns = [
     { text: '新游戏', color: colors.btnPrimary },
@@ -489,7 +503,7 @@ function renderControls() {
   ]
   
   btns.forEach((btn, index) => {
-    const x = 15 + index * (btnWidth + 10)
+    const x = offsetX + 15 + index * (btnWidth + 10)
     const y = startY
     const isPressed = pressedBtn && pressedBtn.type === 'ctrl' && pressedBtn.index === index
     
@@ -508,13 +522,14 @@ function renderControls() {
 function renderNumberPad() {
   const offsetY = safeTop + 105
   const ctrlBtnY = offsetY + cellSize * 9 + 15
-  const ctrlBtnHeight = 45
-  const numPadY = ctrlBtnY + ctrlBtnHeight + 15
+  const ctrlBtnHeight = Math.max(35, cellSize * 0.85)
+  const numPadY = ctrlBtnY + ctrlBtnHeight + 10
   
-  const numBtnWidth = (width - 60) / 5
-  const numBtnHeight = (width - 75) / 5
-  const numPadHeight = numBtnHeight * 3 + 6 * 2
-  const numPadWidth = 4 * numBtnWidth + 3 * 6
+  const numBtnSize = Math.max(32, cellSize * 0.85)
+  const numBtnWidth = numBtnSize
+  const numBtnHeight = numBtnSize
+  const numPadHeight = numBtnHeight * 3 + 4 * 2
+  const numPadWidth = 4 * numBtnWidth + 3 * 4
   const numPadOffsetX = (width - numPadWidth) / 2
   
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -522,8 +537,8 @@ function renderNumberPad() {
   numbers.forEach((num, index) => {
     const row = Math.floor(index / 3)
     const col = index % 3
-    const x = numPadOffsetX + col * (numBtnWidth + 6)
-    const y = numPadY + row * (numBtnHeight + 6)
+    const x = numPadOffsetX + col * (numBtnWidth + 4)
+    const y = numPadY + row * (numBtnHeight + 4)
     const isPressed = pressedBtn && pressedBtn.type === 'num' && pressedBtn.value === num
     
     ctx.fillStyle = isPressed ? colors.btnPressed : colors.btnPrimary
@@ -537,7 +552,7 @@ function renderNumberPad() {
     ctx.fillText(num, x + numBtnWidth / 2, y + numBtnHeight / 2)
   })
   
-  const clearX = numPadOffsetX + 3 * (numBtnWidth + 6)
+  const clearX = numPadOffsetX + 3 * (numBtnWidth + 4)
   const clearY = numPadY
   const isClearPressed = pressedBtn && pressedBtn.type === 'clear'
   
