@@ -100,8 +100,8 @@ function generatePuzzle() {
   
   const cellsToRemove = {
     easy: 35,
-    medium: 40,
-    hard: 45
+    medium: 45,
+    hard: 55
   }
   
   const target = cellsToRemove[difficulty]
@@ -117,9 +117,16 @@ function generatePuzzle() {
   let removed = 0
   for (const pos of positions) {
     if (removed >= target) break
+    
+    const temp = board[pos.row][pos.col]
     board[pos.row][pos.col] = 0
-    fixed[pos.row][pos.col] = false
-    removed++
+    
+    if (countSolutions(board.map(r => [...r])) === 1) {
+      fixed[pos.row][pos.col] = false
+      removed++
+    } else {
+      board[pos.row][pos.col] = temp
+    }
   }
   
   remaining = board.flat().filter(cell => cell === 0).length
@@ -147,6 +154,25 @@ function solve(board) {
     }
   }
   return false
+}
+
+function countSolutions(board, limit = 2) {
+  const empty = findEmpty(board)
+  if (!empty) return 1
+  
+  const [row, col] = empty
+  let count = 0
+  
+  for (let num = 1; num <= 9; num++) {
+    if (isValid(board, row, col, num)) {
+      board[row][col] = num
+      count += countSolutions(board, limit)
+      board[row][col] = 0
+      if (count >= limit) return count
+    }
+  }
+  
+  return count
 }
 
 function findEmpty(board) {
@@ -450,7 +476,7 @@ function renderControls() {
   const offsetY = safeTop + 105
   const startY = offsetY + cellSize * 9 + 15
   const btnWidth = (width - 60) / 4
-  const btnHeight = 38
+  const btnHeight = 45
   
   const btns = [
     { text: '新游戏', color: colors.btnPrimary },
@@ -465,11 +491,11 @@ function renderControls() {
     const isPressed = pressedBtn && pressedBtn.type === 'ctrl' && pressedBtn.index === index
     
     ctx.fillStyle = isPressed ? colors.btnPressed : btn.color
-    drawRoundRect(x, y, btnWidth, btnHeight, 8)
+    drawRoundRect(x, y, btnWidth, btnHeight, 10)
     ctx.fill()
     
     ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 13px Arial'
+    ctx.font = 'bold 14px Arial'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(btn.text, x + btnWidth / 2, y + btnHeight / 2)
@@ -479,20 +505,20 @@ function renderControls() {
 function renderNumberPad() {
   const offsetY = safeTop + 105
   const ctrlBtnY = offsetY + cellSize * 9 + 15
-  const ctrlBtnHeight = 38
+  const ctrlBtnHeight = 45
   const numPadY = ctrlBtnY + ctrlBtnHeight + 15
   
-  const numBtnWidth = (width - 50) / 4
-  const numBtnHeight = (width - 50) / 4
-  const numPadHeight = numBtnHeight * 3 + 6 * 2
+  const numBtnWidth = (width - 40) / 4
+  const numBtnHeight = (width - 55) / 4
+  const numPadHeight = numBtnHeight * 3 + 8 * 2
   
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   
   numbers.forEach((num, index) => {
     const row = Math.floor(index / 3)
     const col = index % 3
-    const x = 15 + col * (numBtnWidth + 6)
-    const y = numPadY + row * (numBtnHeight + 6)
+    const x = 15 + col * (numBtnWidth + 8)
+    const y = numPadY + row * (numBtnHeight + 8)
     const isPressed = pressedBtn && pressedBtn.type === 'num' && pressedBtn.value === num
     
     ctx.fillStyle = isPressed ? colors.btnPressed : colors.btnPrimary
@@ -506,7 +532,7 @@ function renderNumberPad() {
     ctx.fillText(num, x + numBtnWidth / 2, y + numBtnHeight / 2)
   })
   
-  const clearX = 15 + 3 * (numBtnWidth + 6)
+  const clearX = 15 + 3 * (numBtnWidth + 8)
   const clearY = numPadY
   const isClearPressed = pressedBtn && pressedBtn.type === 'clear'
   
