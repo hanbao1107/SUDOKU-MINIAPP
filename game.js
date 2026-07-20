@@ -21,6 +21,7 @@ let hardCount = 0
 let remaining = 81
 let pressedBtn = null
 let currentScreen = 'home'
+let settingsMenuOpen = false
 
 const colors = {
   background: '#f0f4f8',
@@ -276,6 +277,41 @@ function handleInput(e) {
   }
   
   const diffBtnY = safeTop + 60
+  const settingsBtnSize = 40
+  const settingsBtnX = 15
+  const settingsBtnY = safeTop + 15
+  
+  if (x >= settingsBtnX && x <= settingsBtnX + settingsBtnSize && y >= settingsBtnY && y <= settingsBtnY + settingsBtnSize) {
+    settingsMenuOpen = !settingsMenuOpen
+    render()
+    return
+  }
+  
+  if (settingsMenuOpen) {
+    const menuWidth = 180
+    const menuHeight = 80
+    const menuX = settingsBtnX
+    const menuY = settingsBtnY + settingsBtnSize + 5
+    
+    const backBtnY = menuY + 15
+    const backBtnHeight = 50
+    
+    if (x >= menuX && x <= menuX + menuWidth && y >= backBtnY && y <= backBtnY + backBtnHeight) {
+      currentScreen = 'home'
+      settingsMenuOpen = false
+      stopTimer()
+      renderHome()
+      return
+    }
+    
+    if (x < menuX || x > menuX + menuWidth || y < menuY || y > menuY + menuHeight) {
+      settingsMenuOpen = false
+      render()
+      return
+    }
+    return
+  }
+  
   const diffBtnWidth = (gameWidth - 60) / 3
   const diffBtnHeight = 35
   const offsetX = (width - gameWidth) / 2
@@ -473,6 +509,46 @@ function renderInfo() {
   ctx.font = '14px Arial'
   ctx.fillStyle = '#4a5568'
   ctx.fillText(`剩余: ${remaining}  |  时间: ${formatTime(timer)}`, width / 2, y + 22)
+  
+  const settingsBtnSize = 40
+  const settingsBtnX = 15
+  const settingsBtnY = safeTop + 15
+  
+  ctx.fillStyle = colors.btnSecondary
+  drawRoundRect(settingsBtnX, settingsBtnY, settingsBtnSize, settingsBtnSize, 10)
+  ctx.fill()
+  
+  ctx.fillStyle = '#ffffff'
+  ctx.font = 'bold 18px Arial'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText('⚙', settingsBtnX + settingsBtnSize / 2, settingsBtnY + settingsBtnSize / 2)
+  
+  if (settingsMenuOpen) {
+    const menuWidth = 180
+    const menuHeight = 80
+    const menuX = settingsBtnX
+    const menuY = settingsBtnY + settingsBtnSize + 5
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+    ctx.fillRect(0, 0, width, height)
+    
+    ctx.fillStyle = colors.board
+    drawRoundRect(menuX, menuY, menuWidth, menuHeight, 12)
+    ctx.fill()
+    
+    ctx.fillStyle = colors.border
+    ctx.lineWidth = 1
+    ctx.stroke()
+    
+    const backBtnY = menuY + 15
+    const backBtnHeight = 50
+    
+    ctx.fillStyle = colors.text
+    ctx.font = '16px Arial'
+    ctx.textAlign = 'left'
+    ctx.fillText('返回主界面', menuX + 20, backBtnY + backBtnHeight / 2)
+  }
 }
 
 function renderDifficultyButtons() {
