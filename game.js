@@ -266,8 +266,13 @@ function handleInput(e) {
     const btnY = logoY + logoSize + 60
     
     if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
-      currentScreen = 'game'
-      newGame()
+      pressedBtn = { type: 'startGame' }
+      renderHome()
+      setTimeout(() => {
+        pressedBtn = null
+        currentScreen = 'game'
+        newGame()
+      }, 150)
     }
     return
   }
@@ -277,8 +282,13 @@ function handleInput(e) {
   const settingsBtnY = safeTop + 15
   
   if (x >= settingsBtnX && x <= settingsBtnX + settingsBtnSize && y >= settingsBtnY && y <= settingsBtnY + settingsBtnSize) {
-    settingsMenuOpen = !settingsMenuOpen
+    pressedBtn = { type: 'settings' }
     render()
+    setTimeout(() => {
+      pressedBtn = null
+      settingsMenuOpen = !settingsMenuOpen
+      render()
+    }, 150)
     return
   }
   
@@ -292,9 +302,14 @@ function handleInput(e) {
     const backBtnHeight = 50
     
     if (x >= menuX && x <= menuX + menuWidth && y >= backBtnY && y <= backBtnY + backBtnHeight) {
-      settingsMenuOpen = false
-      confirmDialogOpen = true
+      pressedBtn = { type: 'backToHome' }
       render()
+      setTimeout(() => {
+        pressedBtn = null
+        settingsMenuOpen = false
+        confirmDialogOpen = true
+        render()
+      }, 150)
       return
     }
     
@@ -323,16 +338,26 @@ function handleInput(e) {
     const yesBtnX = startX + btnWidth + gap
     
     if (x >= yesBtnX && x <= yesBtnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
-      currentScreen = 'home'
-      confirmDialogOpen = false
-      stopTimer()
-      renderHome()
+      pressedBtn = { type: 'confirmYes' }
+      render()
+      setTimeout(() => {
+        pressedBtn = null
+        currentScreen = 'home'
+        confirmDialogOpen = false
+        stopTimer()
+        renderHome()
+      }, 150)
       return
     }
     
     if (x >= noBtnX && x <= noBtnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
-      confirmDialogOpen = false
+      pressedBtn = { type: 'confirmNo' }
       render()
+      setTimeout(() => {
+        pressedBtn = null
+        confirmDialogOpen = false
+        render()
+      }, 150)
       return
     }
     
@@ -518,7 +543,11 @@ function renderHome() {
   const btnX = (width - btnWidth) / 2
   const btnY = logoY + logoSize + 60
   
-  ctx.fillStyle = colors.btnPrimary
+  if (pressedBtn?.type === 'startGame') {
+    ctx.fillStyle = '#154a7a'
+  } else {
+    ctx.fillStyle = colors.btnPrimary
+  }
   drawRoundRect(btnX, btnY, btnWidth, btnHeight, 30)
   ctx.fill()
   
@@ -551,16 +580,20 @@ function renderInfo() {
   ctx.fillStyle = '#4a5568'
   ctx.fillText(`剩余: ${remaining}  |  时间: ${formatTime(timer)}`, width / 2, y + 22)
   
-  const settingsBtnSize = 42
+  const settingsBtnSize = 40
   const settingsBtnX = 15
   const settingsBtnY = safeTop + 15
   
-  ctx.fillStyle = colors.btnSecondary
+  if (pressedBtn?.type === 'settings') {
+    ctx.fillStyle = '#5a6a7a'
+  } else {
+    ctx.fillStyle = colors.btnSecondary
+  }
   drawRoundRect(settingsBtnX, settingsBtnY, settingsBtnSize, settingsBtnSize, 10)
   ctx.fill()
   
   ctx.fillStyle = '#ffffff'
-  ctx.font = 'bold 22px Arial'
+  ctx.font = 'bold 26px Arial'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText('⚙', settingsBtnX + settingsBtnSize / 2, settingsBtnY + settingsBtnSize / 2)
@@ -587,6 +620,16 @@ function renderSettingsMenu() {
   
   const backBtnY = menuY + 25
   const backBtnHeight = 50
+  const backBtnWidth = menuWidth - 40
+  const backBtnX = menuX + 20
+  
+  if (pressedBtn?.type === 'backToHome') {
+    ctx.fillStyle = '#cbd5e0'
+  } else {
+    ctx.fillStyle = '#edf2f7'
+  }
+  drawRoundRect(backBtnX, backBtnY, backBtnWidth, backBtnHeight, 8)
+  ctx.fill()
   
   ctx.fillStyle = colors.text
   ctx.font = 'bold 18px Arial'
@@ -630,7 +673,11 @@ function renderConfirmDialog() {
   const startX = dialogX + (dialogWidth - totalBtnWidth) / 2
   
   const noBtnX = startX
-  ctx.fillStyle = colors.btnSecondary
+  if (pressedBtn?.type === 'confirmNo') {
+    ctx.fillStyle = '#5a6a7a'
+  } else {
+    ctx.fillStyle = colors.btnSecondary
+  }
   drawRoundRect(noBtnX, btnY, btnWidth, btnHeight, 8)
   ctx.fill()
   
@@ -639,7 +686,11 @@ function renderConfirmDialog() {
   ctx.fillText('返回游戏', noBtnX + btnWidth / 2, btnY + btnHeight / 2)
   
   const yesBtnX = startX + btnWidth + gap
-  ctx.fillStyle = colors.btnPrimary
+  if (pressedBtn?.type === 'confirmYes') {
+    ctx.fillStyle = '#154a7a'
+  } else {
+    ctx.fillStyle = colors.btnPrimary
+  }
   drawRoundRect(yesBtnX, btnY, btnWidth, btnHeight, 8)
   ctx.fill()
   
