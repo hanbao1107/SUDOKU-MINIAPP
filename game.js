@@ -22,6 +22,7 @@ let remaining = 81
 let pressedBtn = null
 let currentScreen = 'home'
 let settingsMenuOpen = false
+let confirmDialogOpen = false
 
 const colors = {
   background: '#f0f4f8',
@@ -291,15 +292,48 @@ function handleInput(e) {
     const backBtnHeight = 50
     
     if (x >= menuX && x <= menuX + menuWidth && y >= backBtnY && y <= backBtnY + backBtnHeight) {
-      currentScreen = 'home'
       settingsMenuOpen = false
-      stopTimer()
-      renderHome()
+      confirmDialogOpen = true
+      render()
       return
     }
     
     if (x < menuX || x > menuX + menuWidth || y < menuY || y > menuY + menuHeight) {
       settingsMenuOpen = false
+      render()
+      return
+    }
+    return
+  }
+  
+  if (confirmDialogOpen) {
+    const dialogWidth = 280
+    const dialogHeight = 160
+    const dialogX = (width - dialogWidth) / 2
+    const dialogY = (height - dialogHeight) / 2
+    
+    const btnWidth = 100
+    const btnHeight = 40
+    const yesBtnX = dialogX + 20
+    const noBtnX = dialogX + dialogWidth - btnWidth - 20
+    const btnY = dialogY + 110
+    
+    if (x >= yesBtnX && x <= yesBtnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+      currentScreen = 'home'
+      confirmDialogOpen = false
+      stopTimer()
+      renderHome()
+      return
+    }
+    
+    if (x >= noBtnX && x <= noBtnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+      confirmDialogOpen = false
+      render()
+      return
+    }
+    
+    if (x < dialogX || x > dialogX + dialogWidth || y < dialogY || y > dialogY + dialogHeight) {
+      confirmDialogOpen = false
       render()
       return
     }
@@ -433,6 +467,7 @@ function render() {
   renderNumberPad()
   
   renderSettingsMenu()
+  renderConfirmDialog()
 }
 
 function renderHome() {
@@ -553,6 +588,55 @@ function renderSettingsMenu() {
   ctx.font = '16px Arial'
   ctx.textAlign = 'center'
   ctx.fillText('返回主界面', menuX + menuWidth / 2, backBtnY + backBtnHeight / 2)
+}
+
+function renderConfirmDialog() {
+  if (!confirmDialogOpen) return
+  
+  const dialogWidth = 280
+  const dialogHeight = 160
+  const dialogX = (width - dialogWidth) / 2
+  const dialogY = (height - dialogHeight) / 2
+  
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+  ctx.fillRect(0, 0, width, height)
+  
+  ctx.fillStyle = colors.board
+  drawRoundRect(dialogX, dialogY, dialogWidth, dialogHeight, 12)
+  ctx.fill()
+  
+  ctx.fillStyle = colors.border
+  ctx.lineWidth = 1
+  ctx.stroke()
+  
+  ctx.fillStyle = colors.text
+  ctx.font = 'bold 18px Arial'
+  ctx.textAlign = 'center'
+  ctx.fillText('是否确定返回主界面', dialogX + dialogWidth / 2, dialogY + 40)
+  
+  ctx.fillStyle = '#718096'
+  ctx.font = '12px Arial'
+  ctx.fillText('如确认返回，当前已开始游戏记录无法保存', dialogX + dialogWidth / 2, dialogY + 75)
+  
+  const btnWidth = 100
+  const btnHeight = 40
+  const btnY = dialogY + 110
+  
+  const yesBtnX = dialogX + 20
+  ctx.fillStyle = colors.btnPrimary
+  drawRoundRect(yesBtnX, btnY, btnWidth, btnHeight, 8)
+  ctx.fill()
+  
+  ctx.fillStyle = '#ffffff'
+  ctx.font = 'bold 16px Arial'
+  ctx.fillText('是', yesBtnX + btnWidth / 2, btnY + btnHeight / 2)
+  
+  const noBtnX = dialogX + dialogWidth - btnWidth - 20
+  ctx.fillStyle = colors.btnSecondary
+  drawRoundRect(noBtnX, btnY, btnWidth, btnHeight, 8)
+  ctx.fill()
+  
+  ctx.fillText('否', noBtnX + btnWidth / 2, btnY + btnHeight / 2)
 }
 
 function renderDifficultyButtons() {
