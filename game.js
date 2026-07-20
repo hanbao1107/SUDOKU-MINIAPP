@@ -271,12 +271,6 @@ function handleInput(e) {
     return
   }
   
-  const infoY = safeTop
-  if (y >= infoY && y <= infoY + 55) {
-    return
-  }
-  
-  const diffBtnY = safeTop + 60
   const settingsBtnSize = 40
   const settingsBtnX = 15
   const settingsBtnY = safeTop + 15
@@ -312,6 +306,12 @@ function handleInput(e) {
     return
   }
   
+  const infoY = safeTop
+  if (y >= infoY && y <= infoY + 55 && (x < settingsBtnX || x > settingsBtnX + settingsBtnSize)) {
+    return
+  }
+  
+  const diffBtnY = safeTop + 60
   const diffBtnWidth = (gameWidth - 60) / 3
   const diffBtnHeight = 35
   const offsetX = (width - gameWidth) / 2
