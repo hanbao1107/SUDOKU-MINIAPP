@@ -314,8 +314,8 @@ function handleInput(e) {
     
     const btnWidth = 100
     const btnHeight = 40
-    const yesBtnX = dialogX + 20
-    const noBtnX = dialogX + dialogWidth - btnWidth - 20
+    const noBtnX = dialogX + 20
+    const yesBtnX = dialogX + dialogWidth - btnWidth - 20
     const btnY = dialogY + 110
     
     if (x >= yesBtnX && x <= yesBtnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
@@ -622,21 +622,23 @@ function renderConfirmDialog() {
   const btnHeight = 40
   const btnY = dialogY + 110
   
-  const yesBtnX = dialogX + 20
+  const noBtnX = dialogX + 20
+  ctx.fillStyle = colors.btnSecondary
+  drawRoundRect(noBtnX, btnY, btnWidth, btnHeight, 8)
+  ctx.fill()
+  
+  ctx.fillStyle = '#1a365d'
+  ctx.font = 'bold 14px Arial'
+  ctx.fillText('返回游戏', noBtnX + btnWidth / 2, btnY + btnHeight / 2)
+  
+  const yesBtnX = dialogX + dialogWidth - btnWidth - 20
   ctx.fillStyle = colors.btnPrimary
   drawRoundRect(yesBtnX, btnY, btnWidth, btnHeight, 8)
   ctx.fill()
   
   ctx.fillStyle = '#ffffff'
   ctx.font = 'bold 16px Arial'
-  ctx.fillText('是', yesBtnX + btnWidth / 2, btnY + btnHeight / 2)
-  
-  const noBtnX = dialogX + dialogWidth - btnWidth - 20
-  ctx.fillStyle = colors.btnSecondary
-  drawRoundRect(noBtnX, btnY, btnWidth, btnHeight, 8)
-  ctx.fill()
-  
-  ctx.fillText('否', noBtnX + btnWidth / 2, btnY + btnHeight / 2)
+  ctx.fillText('确定', yesBtnX + btnWidth / 2, btnY + btnHeight / 2)
 }
 
 function renderDifficultyButtons() {
