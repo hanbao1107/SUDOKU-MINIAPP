@@ -312,11 +312,15 @@ function handleInput(e) {
     const dialogX = (width - dialogWidth) / 2
     const dialogY = (height - dialogHeight) / 2
     
-    const btnWidth = 100
+    const btnWidth = 110
     const btnHeight = 40
-    const noBtnX = dialogX + 20
-    const yesBtnX = dialogX + dialogWidth - btnWidth - 20
     const btnY = dialogY + 110
+    const gap = 20
+    const totalBtnWidth = btnWidth * 2 + gap
+    const startX = dialogX + (dialogWidth - totalBtnWidth) / 2
+    
+    const noBtnX = startX
+    const yesBtnX = startX + btnWidth + gap
     
     if (x >= yesBtnX && x <= yesBtnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
       currentScreen = 'home'
@@ -547,7 +551,7 @@ function renderInfo() {
   ctx.fillStyle = '#4a5568'
   ctx.fillText(`剩余: ${remaining}  |  时间: ${formatTime(timer)}`, width / 2, y + 22)
   
-  const settingsBtnSize = 40
+  const settingsBtnSize = 42
   const settingsBtnX = 15
   const settingsBtnY = safeTop + 15
   
@@ -556,7 +560,7 @@ function renderInfo() {
   ctx.fill()
   
   ctx.fillStyle = '#ffffff'
-  ctx.font = 'bold 18px Arial'
+  ctx.font = 'bold 22px Arial'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText('⚙', settingsBtnX + settingsBtnSize / 2, settingsBtnY + settingsBtnSize / 2)
@@ -585,7 +589,7 @@ function renderSettingsMenu() {
   const backBtnHeight = 50
   
   ctx.fillStyle = colors.text
-  ctx.font = '16px Arial'
+  ctx.font = 'bold 18px Arial'
   ctx.textAlign = 'center'
   ctx.fillText('返回主界面', menuX + menuWidth / 2, backBtnY + backBtnHeight / 2)
 }
@@ -612,17 +616,20 @@ function renderConfirmDialog() {
   ctx.fillStyle = colors.text
   ctx.font = 'bold 18px Arial'
   ctx.textAlign = 'center'
-  ctx.fillText('是否确定返回主界面', dialogX + dialogWidth / 2, dialogY + 40)
+  ctx.fillText('确定返回主界面？', dialogX + dialogWidth / 2, dialogY + 40)
   
   ctx.fillStyle = '#718096'
   ctx.font = '12px Arial'
   ctx.fillText('如确认返回，当前已开始游戏记录无法保存', dialogX + dialogWidth / 2, dialogY + 75)
   
-  const btnWidth = 100
+  const btnWidth = 110
   const btnHeight = 40
   const btnY = dialogY + 110
+  const gap = 20
+  const totalBtnWidth = btnWidth * 2 + gap
+  const startX = dialogX + (dialogWidth - totalBtnWidth) / 2
   
-  const noBtnX = dialogX + 20
+  const noBtnX = startX
   ctx.fillStyle = colors.btnSecondary
   drawRoundRect(noBtnX, btnY, btnWidth, btnHeight, 8)
   ctx.fill()
@@ -631,7 +638,7 @@ function renderConfirmDialog() {
   ctx.font = 'bold 14px Arial'
   ctx.fillText('返回游戏', noBtnX + btnWidth / 2, btnY + btnHeight / 2)
   
-  const yesBtnX = dialogX + dialogWidth - btnWidth - 20
+  const yesBtnX = startX + btnWidth + gap
   ctx.fillStyle = colors.btnPrimary
   drawRoundRect(yesBtnX, btnY, btnWidth, btnHeight, 8)
   ctx.fill()
