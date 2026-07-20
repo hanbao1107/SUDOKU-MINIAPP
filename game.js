@@ -20,6 +20,7 @@ let mediumCount = 0
 let hardCount = 0
 let remaining = 81
 let pressedBtn = null
+let currentScreen = 'home'
 
 const colors = {
   background: '#f0f4f8',
@@ -64,16 +65,40 @@ function init() {
   statusBarHeight = systemInfo.statusBarHeight || 20
   safeTop = statusBarHeight + 10
   
+
+
+
+
+
+
+
+
+
+
   const maxWidth = 420
-  gameWidth = Math.min(width, maxWidth)
+  let targetGameWidth = Math.min(width, maxWidth)
   
-  cellSize = Math.floor((gameWidth - 40) / 9)
+  let cellSizeByWidth = Math.floor((targetGameWidth - 40) / 9)
+  
+  let currentGameWidth = cellSizeByWidth * 9 + 40
+  let currentNumBtnHeight = (currentGameWidth - 75) / 5
+  let currentMinHeight = safeTop + 105 + cellSizeByWidth * 9 + 15 + 45 + 15 + currentNumBtnHeight * 3 + 6 * 2 + 20
+  
+  while (currentMinHeight > height && cellSizeByWidth > 25) {
+    cellSizeByWidth--
+    currentGameWidth = cellSizeByWidth * 9 + 40
+    currentNumBtnHeight = (currentGameWidth - 75) / 5
+    currentMinHeight = safeTop + 105 + cellSizeByWidth * 9 + 15 + 45 + 15 + currentNumBtnHeight * 3 + 6 * 2 + 20
+  }
+  
+  cellSize = cellSizeByWidth
+  gameWidth = currentGameWidth
   
   canvas.width = width * dpr
   canvas.height = height * dpr
   ctx.scale(dpr, dpr)
   
-  newGame()
+  renderHome()
   
   wx.onTouchStart(handleInput)
 }
@@ -230,6 +255,21 @@ function handleInput(e) {
     return
   }
   
+  if (currentScreen === 'home') {
+    const logoSize = Math.min(width, height) * 0.35
+    const logoY = (height - logoSize) / 2 - 60
+    const btnWidth = Math.min(width - 80, 280)
+    const btnHeight = 60
+    const btnX = (width - btnWidth) / 2
+    const btnY = logoY + logoSize + 60
+    
+    if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+      currentScreen = 'game'
+      newGame()
+    }
+    return
+  }
+  
   const infoY = safeTop
   if (y >= infoY && y <= infoY + 55) {
     return
@@ -342,6 +382,11 @@ function handleInput(e) {
 }
 
 function render() {
+  if (currentScreen === 'home') {
+    renderHome()
+    return
+  }
+  
   ctx.fillStyle = colors.background
   ctx.fillRect(0, 0, width, height)
   
@@ -350,6 +395,65 @@ function render() {
   renderBoard()
   renderControls()
   renderNumberPad()
+}
+
+function renderHome() {
+  ctx.fillStyle = colors.background
+  ctx.fillRect(0, 0, width, height)
+  
+  const logoSize = Math.min(width, height) * 0.35
+  const logoX = (width - logoSize) / 2
+  const logoY = (height - logoSize) / 2 - 60
+  
+  ctx.fillStyle = colors.board
+  drawRoundRect(logoX, logoY, logoSize, logoSize, 20)
+  ctx.fill()
+  
+  ctx.strokeStyle = colors.border
+  ctx.lineWidth = 4
+  ctx.stroke()
+  
+  ctx.fillStyle = colors.border
+  ctx.font = `bold ${logoSize * 0.18}px Arial`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  
+  const gridSize = logoSize - 40
+  const gridOffsetX = logoX + 20
+  const gridOffsetY = logoY + 20
+  const cellSize = gridSize / 9
+  
+  for (let i = 0; i <= 9; i++) {
+    ctx.beginPath()
+    ctx.lineWidth = (i % 3 === 0) ? 3 : 1
+    ctx.moveTo(gridOffsetX, gridOffsetY + i * cellSize)
+    ctx.lineTo(gridOffsetX + gridSize, gridOffsetY + i * cellSize)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.moveTo(gridOffsetX + i * cellSize, gridOffsetY)
+    ctx.lineTo(gridOffsetX + i * cellSize, gridOffsetY + gridSize)
+    ctx.stroke()
+  }
+  
+  const btnWidth = Math.min(width - 80, 280)
+  const btnHeight = 60
+  const btnX = (width - btnWidth) / 2
+  const btnY = logoY + logoSize + 60
+  
+  ctx.fillStyle = colors.btnPrimary
+  drawRoundRect(btnX, btnY, btnWidth, btnHeight, 30)
+  ctx.fill()
+  
+  ctx.fillStyle = '#ffffff'
+  ctx.font = 'bold 28px Arial'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText('数独', btnX + btnWidth / 2, btnY + btnHeight / 2)
+  
+  ctx.font = '14px Arial'
+  ctx.fillStyle = '#718096'
+  ctx.fillText('挑战你的逻辑思维', width / 2, btnY + btnHeight + 40)
 }
 
 function renderInfo() {
