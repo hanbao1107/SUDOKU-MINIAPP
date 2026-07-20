@@ -431,6 +431,8 @@ function render() {
   renderBoard()
   renderControls()
   renderNumberPad()
+  
+  renderSettingsMenu()
 }
 
 function renderHome() {
@@ -523,32 +525,34 @@ function renderInfo() {
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText('⚙', settingsBtnX + settingsBtnSize / 2, settingsBtnY + settingsBtnSize / 2)
+}
+
+function renderSettingsMenu() {
+  if (!settingsMenuOpen) return
   
-  if (settingsMenuOpen) {
-    const menuWidth = 200
-    const menuHeight = 100
-    const menuX = (width - menuWidth) / 2
-    const menuY = (height - menuHeight) / 2
-    
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
-    ctx.fillRect(0, 0, width, height)
-    
-    ctx.fillStyle = colors.board
-    drawRoundRect(menuX, menuY, menuWidth, menuHeight, 12)
-    ctx.fill()
-    
-    ctx.fillStyle = colors.border
-    ctx.lineWidth = 1
-    ctx.stroke()
-    
-    const backBtnY = menuY + 25
-    const backBtnHeight = 50
-    
-    ctx.fillStyle = colors.text
-    ctx.font = '16px Arial'
-    ctx.textAlign = 'center'
-    ctx.fillText('返回主界面', menuX + menuWidth / 2, backBtnY + backBtnHeight / 2)
-  }
+  const menuWidth = 200
+  const menuHeight = 100
+  const menuX = (width - menuWidth) / 2
+  const menuY = (height - menuHeight) / 2
+  
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+  ctx.fillRect(0, 0, width, height)
+  
+  ctx.fillStyle = colors.board
+  drawRoundRect(menuX, menuY, menuWidth, menuHeight, 12)
+  ctx.fill()
+  
+  ctx.fillStyle = colors.border
+  ctx.lineWidth = 1
+  ctx.stroke()
+  
+  const backBtnY = menuY + 25
+  const backBtnHeight = 50
+  
+  ctx.fillStyle = colors.text
+  ctx.font = '16px Arial'
+  ctx.textAlign = 'center'
+  ctx.fillText('返回主界面', menuX + menuWidth / 2, backBtnY + backBtnHeight / 2)
 }
 
 function renderDifficultyButtons() {
