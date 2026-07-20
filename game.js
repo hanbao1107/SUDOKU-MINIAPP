@@ -282,12 +282,12 @@ function handleInput(e) {
   }
   
   if (settingsMenuOpen) {
-    const menuWidth = 180
-    const menuHeight = 80
-    const menuX = settingsBtnX
-    const menuY = settingsBtnY + settingsBtnSize + 5
+    const menuWidth = 200
+    const menuHeight = 100
+    const menuX = (width - menuWidth) / 2
+    const menuY = (height - menuHeight) / 2
     
-    const backBtnY = menuY + 15
+    const backBtnY = menuY + 25
     const backBtnHeight = 50
     
     if (x >= menuX && x <= menuX + menuWidth && y >= backBtnY && y <= backBtnY + backBtnHeight) {
@@ -525,10 +525,10 @@ function renderInfo() {
   ctx.fillText('⚙', settingsBtnX + settingsBtnSize / 2, settingsBtnY + settingsBtnSize / 2)
   
   if (settingsMenuOpen) {
-    const menuWidth = 180
-    const menuHeight = 80
-    const menuX = settingsBtnX
-    const menuY = settingsBtnY + settingsBtnSize + 5
+    const menuWidth = 200
+    const menuHeight = 100
+    const menuX = (width - menuWidth) / 2
+    const menuY = (height - menuHeight) / 2
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
     ctx.fillRect(0, 0, width, height)
@@ -541,13 +541,13 @@ function renderInfo() {
     ctx.lineWidth = 1
     ctx.stroke()
     
-    const backBtnY = menuY + 15
+    const backBtnY = menuY + 25
     const backBtnHeight = 50
     
     ctx.fillStyle = colors.text
     ctx.font = '16px Arial'
-    ctx.textAlign = 'left'
-    ctx.fillText('返回主界面', menuX + 20, backBtnY + backBtnHeight / 2)
+    ctx.textAlign = 'center'
+    ctx.fillText('返回主界面', menuX + menuWidth / 2, backBtnY + backBtnHeight / 2)
   }
 }
 
