@@ -23,6 +23,85 @@ let pressedBtn = null
 let currentScreen = 'home'
 let settingsMenuOpen = false
 let confirmDialogOpen = false
+let soundEnabled = true
+let audioCtx = null
+
+function playClickSound() {
+  if (!soundEnabled) return
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+    }
+    const oscillator = audioCtx.createOscillator()
+    const gainNode = audioCtx.createGain()
+    
+    oscillator.connect(gainNode)
+    gainNode.connect(audioCtx.destination)
+    
+    oscillator.frequency.value = 800
+    oscillator.type = 'sine'
+    
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1)
+    
+    oscillator.start(audioCtx.currentTime)
+    oscillator.stop(audioCtx.currentTime + 0.1)
+  } catch (e) {
+    console.log('Audio play failed:', e)
+  }
+}
+
+function playSuccessSound() {
+  if (!soundEnabled) return
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+    }
+    const oscillator = audioCtx.createOscillator()
+    const gainNode = audioCtx.createGain()
+    
+    oscillator.connect(gainNode)
+    gainNode.connect(audioCtx.destination)
+    
+    oscillator.frequency.setValueAtTime(523, audioCtx.currentTime)
+    oscillator.frequency.setValueAtTime(659, audioCtx.currentTime + 0.1)
+    oscillator.frequency.setValueAtTime(784, audioCtx.currentTime + 0.2)
+    oscillator.type = 'sine'
+    
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4)
+    
+    oscillator.start(audioCtx.currentTime)
+    oscillator.stop(audioCtx.currentTime + 0.4)
+  } catch (e) {
+    console.log('Audio play failed:', e)
+  }
+}
+
+function playErrorSound() {
+  if (!soundEnabled) return
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+    }
+    const oscillator = audioCtx.createOscillator()
+    const gainNode = audioCtx.createGain()
+    
+    oscillator.connect(gainNode)
+    gainNode.connect(audioCtx.destination)
+    
+    oscillator.frequency.value = 200
+    oscillator.type = 'sawtooth'
+    
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2)
+    
+    oscillator.start(audioCtx.currentTime)
+    oscillator.stop(audioCtx.currentTime + 0.2)
+  } catch (e) {
+    console.log('Audio play failed:', e)
+  }
+}
 
 const colors = {
   background: '#f0f4f8',
@@ -266,6 +345,7 @@ function handleInput(e) {
     const btnY = logoY + logoSize + 60
     
     if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+      playClickSound()
       pressedBtn = { type: 'startGame' }
       renderHome()
       setTimeout(() => {
@@ -282,6 +362,7 @@ function handleInput(e) {
   const settingsBtnY = safeTop + 15
   
   if (x >= settingsBtnX && x <= settingsBtnX + settingsBtnSize && y >= settingsBtnY && y <= settingsBtnY + settingsBtnSize) {
+    playClickSound()
     pressedBtn = { type: 'settings' }
     render()
     setTimeout(() => {
@@ -293,15 +374,34 @@ function handleInput(e) {
   }
   
   if (settingsMenuOpen) {
-    const menuWidth = 200
-    const menuHeight = 100
+    const menuWidth = 220
+    const menuHeight = 140
     const menuX = (width - menuWidth) / 2
     const menuY = (height - menuHeight) / 2
     
-    const backBtnY = menuY + 25
-    const backBtnHeight = 50
+    const btnWidth = menuWidth - 40
+    const btnHeight = 40
     
-    if (x >= menuX && x <= menuX + menuWidth && y >= backBtnY && y <= backBtnY + backBtnHeight) {
+    const soundBtnY = menuY + 20
+    const soundBtnX = menuX + 20
+    
+    if (x >= soundBtnX && x <= soundBtnX + btnWidth && y >= soundBtnY && y <= soundBtnY + btnHeight) {
+      playClickSound()
+      pressedBtn = { type: 'toggleSound' }
+      render()
+      setTimeout(() => {
+        pressedBtn = null
+        soundEnabled = !soundEnabled
+        render()
+      }, 150)
+      return
+    }
+    
+    const backBtnY = menuY + 70
+    const backBtnX = menuX + 20
+    
+    if (x >= backBtnX && x <= backBtnX + btnWidth && y >= backBtnY && y <= backBtnY + btnHeight) {
+      playClickSound()
       pressedBtn = { type: 'backToHome' }
       render()
       setTimeout(() => {
@@ -338,6 +438,7 @@ function handleInput(e) {
     const yesBtnX = startX + btnWidth + gap
     
     if (x >= yesBtnX && x <= yesBtnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+      playClickSound()
       pressedBtn = { type: 'confirmYes' }
       render()
       setTimeout(() => {
@@ -351,6 +452,7 @@ function handleInput(e) {
     }
     
     if (x >= noBtnX && x <= noBtnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+      playClickSound()
       pressedBtn = { type: 'confirmNo' }
       render()
       setTimeout(() => {
@@ -413,6 +515,7 @@ function handleInput(e) {
   for (let i = 0; i < 4; i++) {
     const btnX = offsetX + 15 + i * (ctrlBtnWidth + 10)
     if (x >= btnX && x <= btnX + ctrlBtnWidth && y >= ctrlBtnY && y <= ctrlBtnY + ctrlBtnHeight) {
+      playClickSound()
       pressedBtn = { type: 'ctrl', index: i }
       render()
       setTimeout(() => {
@@ -438,6 +541,7 @@ function handleInput(e) {
     const numY = numPadY + row * (numBtnHeight + 6)
     
     if (x >= numX && x <= numX + numBtnWidth && y >= numY && y <= numY + numBtnHeight) {
+      playClickSound()
       pressedBtn = { type: 'num', value: i }
       render()
       setTimeout(() => {
@@ -461,6 +565,7 @@ function handleInput(e) {
   const clearY = numPadY
   
   if (x >= clearX && x <= clearX + numBtnWidth && y >= clearY && y <= clearY + numPadHeight) {
+    playClickSound()
     pressedBtn = { type: 'clear' }
     render()
     setTimeout(() => {
@@ -602,8 +707,8 @@ function renderInfo() {
 function renderSettingsMenu() {
   if (!settingsMenuOpen) return
   
-  const menuWidth = 200
-  const menuHeight = 100
+  const menuWidth = 220
+  const menuHeight = 140
   const menuX = (width - menuWidth) / 2
   const menuY = (height - menuHeight) / 2
   
@@ -618,9 +723,31 @@ function renderSettingsMenu() {
   ctx.lineWidth = 1
   ctx.stroke()
   
-  const backBtnY = menuY + 25
-  const backBtnHeight = 50
-  const backBtnWidth = menuWidth - 40
+  const btnWidth = menuWidth - 40
+  const btnHeight = 40
+  
+  const soundBtnY = menuY + 20
+  const soundBtnX = menuX + 20
+  
+  if (pressedBtn?.type === 'toggleSound') {
+    ctx.fillStyle = '#cbd5e0'
+  } else {
+    ctx.fillStyle = '#edf2f7'
+  }
+  drawRoundRect(soundBtnX, soundBtnY, btnWidth, btnHeight, 8)
+  ctx.fill()
+  
+  ctx.fillStyle = colors.text
+  ctx.font = 'bold 16px Arial'
+  ctx.textAlign = 'left'
+  ctx.fillText('音效', soundBtnX + 15, soundBtnY + btnHeight / 2)
+  
+  ctx.textAlign = 'right'
+  const soundStatus = soundEnabled ? '开启' : '关闭'
+  ctx.fillStyle = soundEnabled ? '#38a169' : '#e53e3e'
+  ctx.fillText(soundStatus, soundBtnX + btnWidth - 15, soundBtnY + btnHeight / 2)
+  
+  const backBtnY = menuY + 70
   const backBtnX = menuX + 20
   
   if (pressedBtn?.type === 'backToHome') {
@@ -628,13 +755,13 @@ function renderSettingsMenu() {
   } else {
     ctx.fillStyle = '#edf2f7'
   }
-  drawRoundRect(backBtnX, backBtnY, backBtnWidth, backBtnHeight, 8)
+  drawRoundRect(backBtnX, backBtnY, btnWidth, btnHeight, 8)
   ctx.fill()
   
   ctx.fillStyle = colors.text
-  ctx.font = 'bold 18px Arial'
+  ctx.font = 'bold 16px Arial'
   ctx.textAlign = 'center'
-  ctx.fillText('返回主界面', menuX + menuWidth / 2, backBtnY + backBtnHeight / 2)
+  ctx.fillText('返回主界面', menuX + menuWidth / 2, backBtnY + btnHeight / 2)
 }
 
 function renderConfirmDialog() {
@@ -904,11 +1031,13 @@ function checkBoard() {
   render()
   
   if (errors === 0) {
+    playSuccessSound()
     wx.showToast({
       title: '没有错误！',
       icon: 'success'
     })
   } else {
+    playErrorSound()
     wx.showModal({
       title: `发现 ${errors} 个错误`,
       content: '是否清除所有错误格子？',
@@ -961,6 +1090,7 @@ function submitBoard() {
   }
   
   if (errors === 0) {
+    playSuccessSound()
     stopTimer()
     wx.showModal({
       title: '恭喜完成',
@@ -972,6 +1102,7 @@ function submitBoard() {
       }
     })
   } else {
+    playErrorSound()
     wx.showModal({
       title: '发现错误',
       content: `发现 ${errors} 个错误，是否清除错误格子？`,
