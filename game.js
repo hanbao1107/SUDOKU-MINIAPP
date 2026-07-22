@@ -511,7 +511,7 @@ function handleInput(e) {
     return
   }
   
-  const ctrlBtnY = boardOffsetY + cellSize * 9 + 15
+  const ctrlBtnY = safeTop + 105 + cellSize * 9 + 15
   const ctrlBtnWidth = (gameWidth - 60) / 4
   const ctrlBtnHeight = 45
   
@@ -537,7 +537,7 @@ function handleInput(e) {
   const numPadHeight = numBtnHeight * 3 + 6 * 2
   const numPadWidth = 4 * numBtnWidth + 3 * 6
   const numPadOffsetX = (width - numPadWidth) / 2
-  const numPadY = ctrlBtnY + ctrlBtnHeight + 15
+  const numPadY = safeTop + 105 + cellSize * 9 + 15 + ctrlBtnHeight + 15
   
   for (let i = 1; i <= 9; i++) {
     const row = Math.floor((i - 1) / 3)
