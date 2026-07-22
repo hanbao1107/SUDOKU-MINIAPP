@@ -26,12 +26,19 @@ let confirmDialogOpen = false
 let soundEnabled = true
 let audioCtx = null
 
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume()
+  }
+}
+
 function playClickSound() {
   if (!soundEnabled) return
   try {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-    }
+    initAudio()
     const oscillator = audioCtx.createOscillator()
     const gainNode = audioCtx.createGain()
     
@@ -41,7 +48,7 @@ function playClickSound() {
     oscillator.frequency.value = 800
     oscillator.type = 'sine'
     
-    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime)
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime)
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1)
     
     oscillator.start(audioCtx.currentTime)
@@ -54,9 +61,7 @@ function playClickSound() {
 function playSuccessSound() {
   if (!soundEnabled) return
   try {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-    }
+    initAudio()
     const oscillator = audioCtx.createOscillator()
     const gainNode = audioCtx.createGain()
     
@@ -68,7 +73,7 @@ function playSuccessSound() {
     oscillator.frequency.setValueAtTime(784, audioCtx.currentTime + 0.2)
     oscillator.type = 'sine'
     
-    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime)
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime)
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4)
     
     oscillator.start(audioCtx.currentTime)
@@ -81,9 +86,7 @@ function playSuccessSound() {
 function playErrorSound() {
   if (!soundEnabled) return
   try {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-    }
+    initAudio()
     const oscillator = audioCtx.createOscillator()
     const gainNode = audioCtx.createGain()
     
@@ -93,7 +96,7 @@ function playErrorSound() {
     oscillator.frequency.value = 200
     oscillator.type = 'sawtooth'
     
-    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime)
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime)
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2)
     
     oscillator.start(audioCtx.currentTime)
@@ -335,6 +338,8 @@ function handleInput(e) {
   } else {
     return
   }
+  
+  initAudio()
   
   if (currentScreen === 'home') {
     const logoSize = Math.min(width, height) * 0.35
