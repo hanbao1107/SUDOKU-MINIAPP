@@ -28,10 +28,17 @@ let audioCtx = null
 
 function initAudio() {
   if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext
+      if (AudioContextClass) {
+        audioCtx = new AudioContextClass()
+      }
+    } catch (e) {
+      console.log('AudioContext creation failed:', e)
+    }
   }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume()
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(e => console.log('Audio resume failed:', e))
   }
 }
 
@@ -339,7 +346,11 @@ function handleInput(e) {
     return
   }
   
-  initAudio()
+  try {
+    initAudio()
+  } catch (e) {
+    console.log('Audio init failed:', e)
+  }
   
   if (currentScreen === 'home') {
     const logoSize = Math.min(width, height) * 0.35
