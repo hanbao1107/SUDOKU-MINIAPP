@@ -330,11 +330,11 @@ function handleInput(e) {
   let x, y
   
   if (e.touches && e.touches.length > 0) {
-    x = e.touches[0].clientX
-    y = e.touches[0].clientY
+    x = e.touches[0].clientX / dpr
+    y = e.touches[0].clientY / dpr
   } else if (e.clientX !== undefined) {
-    x = e.clientX
-    y = e.clientY
+    x = e.clientX / dpr
+    y = e.clientY / dpr
   } else {
     return
   }
